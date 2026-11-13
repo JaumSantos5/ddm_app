@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+
 import 'login_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -9,6 +12,35 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  int paginaAtual = 0;
+  late PageController controlador;
+  late Timer temporizador;
+
+  @override
+  void initState() {
+    super.initState();
+
+    controlador = PageController();
+
+    // Troca automaticamente a imagem a cada 3 segundos.
+    temporizador = Timer.periodic(Duration(seconds: 3), (timer) {
+      if (controlador.hasClients) {
+        controlador.animateToPage(
+          paginaAtual == 0 ? 1 : 0,
+          duration: Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    temporizador.cancel();
+    controlador.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,8 +56,17 @@ class _HomeScreenState extends State<HomeScreen> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('ENTREGAR EM', style: TextStyle(fontSize: 11, color: Colors.grey)),
-                    Text('Rua das Flores, 120', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                    Text(
+                      'ENTREGAR EM',
+                      style: TextStyle(fontSize: 11, color: Colors.grey),
+                    ),
+                    Text(
+                      'Rua das Flores, 120',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ],
                 ),
                 Icon(Icons.shopping_cart_outlined, size: 28),
@@ -34,8 +75,14 @@ class _HomeScreenState extends State<HomeScreen> {
             SizedBox(height: 30),
 
             // Nome do restaurante
-            Text('teste italiano', style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
-            Text('Massas feitas do seu jeito.', style: TextStyle(color: Colors.grey[700])),
+            Text(
+              'teste italiano',
+              style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+            ),
+            Text(
+              'Massas feitas do seu jeito.',
+              style: TextStyle(color: Colors.grey[700]),
+            ),
             SizedBox(height: 25),
 
             // Busca
@@ -60,11 +107,24 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('DESTAQUE', style: TextStyle(color: Colors.white70, fontSize: 12)),
+                        Text(
+                          'DESTAQUE',
+                          style: TextStyle(color: Colors.white70, fontSize: 12),
+                        ),
                         SizedBox(height: 10),
-                        Text('Monte sua massa', style: TextStyle(color: Colors.white, fontSize: 21, fontWeight: FontWeight.bold)),
+                        Text(
+                          'Monte sua massa',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 21,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                         SizedBox(height: 8),
-                        Text('A partir de R\$ 29,90', style: TextStyle(color: Colors.white70)),
+                        Text(
+                          'A partir de R\$ 29,90',
+                          style: TextStyle(color: Colors.white70),
+                        ),
                       ],
                     ),
                   ),
@@ -74,8 +134,86 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             SizedBox(height: 30),
 
+            Text(
+              'Conheça nossas massas',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 15),
+            SizedBox(
+              height: 500,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Stack(
+                  children: [
+                    PageView(
+                      controller: controlador,
+                      onPageChanged: (index) {
+                        setState(() {
+                          paginaAtual = index;
+                        });
+                      },
+                      children: [
+                        Image.asset(
+                          'images/espaguete.jpg',
+                          fit: BoxFit.contain,
+                          width: double.infinity,
+                        ),
+                        Image.asset(
+                          'images/panne-alfredo.jpg',
+                          fit: BoxFit.contain,
+                          width: double.infinity,
+                        ),
+                      ],
+                    ),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Container(
+                        color: Colors.black45,
+                        child: IconButton(
+                          onPressed: () {
+                            controlador.animateToPage(
+                              paginaAtual == 0 ? 1 : 0,
+                              duration: Duration(milliseconds: 500),
+                              curve: Curves.easeInOut,
+                            );
+                          },
+                          icon: Icon(Icons.chevron_left, color: Colors.white),
+                        ),
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Container(
+                        color: Colors.black45,
+                        child: IconButton(
+                          onPressed: () {
+                            controlador.animateToPage(
+                              paginaAtual == 0 ? 1 : 0,
+                              duration: Duration(milliseconds: 500),
+                              curve: Curves.easeInOut,
+                            );
+                          },
+                          icon: Icon(Icons.chevron_right, color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(height: 6),
+            Text(
+              '${paginaAtual + 1} / 2',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.grey),
+            ),
+            SizedBox(height: 30),
+
             // Categorias
-            Text('Categorias', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            Text(
+              'Categorias',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
             SizedBox(height: 15),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -113,7 +251,10 @@ class _HomeScreenState extends State<HomeScreen> {
             SizedBox(height: 30),
 
             // Produtos
-            Text('Nossas massas', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            Text(
+              'Nossas massas',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
             SizedBox(height: 15),
             Container(
               color: Colors.white,
@@ -131,11 +272,26 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Espaguete', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                        Text(
+                          'Espaguete',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                         SizedBox(height: 5),
-                        Text('Molho de tomate e queijo.', style: TextStyle(fontSize: 12)),
+                        Text(
+                          'Molho de tomate e queijo.',
+                          style: TextStyle(fontSize: 12),
+                        ),
                         SizedBox(height: 10),
-                        Text('R\$ 29,90', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                        Text(
+                          'R\$ 29,90',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -159,11 +315,26 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Penne Alfredo', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                        Text(
+                          'Penne Alfredo',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                         SizedBox(height: 5),
-                        Text('Molho branco e parmesao.', style: TextStyle(fontSize: 12)),
+                        Text(
+                          'Molho branco e parmesao.',
+                          style: TextStyle(fontSize: 12),
+                        ),
                         SizedBox(height: 10),
-                        Text('R\$ 34,90', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                        Text(
+                          'R\$ 34,90',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -187,11 +358,26 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Bolonhesa', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                        Text(
+                          'Bolonhesa',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                         SizedBox(height: 5),
-                        Text('Massa com molho de carne.', style: TextStyle(fontSize: 12)),
+                        Text(
+                          'Massa com molho de carne.',
+                          style: TextStyle(fontSize: 12),
+                        ),
                         SizedBox(height: 10),
-                        Text('R\$ 35,90', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                        Text(
+                          'R\$ 35,90',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -218,10 +404,19 @@ class _HomeScreenState extends State<HomeScreen> {
           }
         },
         items: [
-          BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'Inicio'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home_outlined),
+            label: 'Inicio',
+          ),
           BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Buscar'),
-          BottomNavigationBarItem(icon: Icon(Icons.receipt_long_outlined), label: 'Pedidos'),
-          BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Perfil'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.receipt_long_outlined),
+            label: 'Pedidos',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person_outline),
+            label: 'Perfil',
+          ),
         ],
       ),
     );
