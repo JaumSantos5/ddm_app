@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import 'login_screen.dart';
+import 'pedidos_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -388,7 +389,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
 
-      // Menu inferior: apenas Perfil abre outra tela.
+      // Menu inferior: Pedidos e Perfil abrem outras telas.
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 0,
         type: BottomNavigationBarType.fixed,
@@ -396,7 +397,12 @@ class _HomeScreenState extends State<HomeScreen> {
         selectedItemColor: Colors.black,
         unselectedItemColor: Colors.grey,
         onTap: (index) {
-          if (index == 3) {
+          if (index == 2) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => PedidosScreen()),
+            );
+          } else if (index == 3) {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => LoginScreen()),
